@@ -85,6 +85,7 @@ export default class DataMatrixReader implements Reader {
     if (ecLevel != null) {
       result.putMetadata(ResultMetadataType.ERROR_CORRECTION_LEVEL, ecLevel);
     }
+    result.putMetadata(ResultMetadataType.BINARY_BITMAP, image as BinaryBitmap)
     return result;
   }
 

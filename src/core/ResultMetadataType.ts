@@ -94,6 +94,8 @@ enum ResultMetadataType {
      */
     STRUCTURED_APPEND_PARITY,
 
+    BINARY_BITMAP,
+
 }
 
 export default ResultMetadataType;

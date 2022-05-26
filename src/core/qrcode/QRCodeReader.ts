@@ -97,6 +97,7 @@ export default class QRCodeReader implements Reader {
       result.putMetadata(ResultMetadataType.STRUCTURED_APPEND_PARITY,
         decoderResult.getStructuredAppendParity());
     }
+    result.putMetadata(ResultMetadataType.BINARY_BITMAP, image as BinaryBitmap)
     return result;
   }
 
