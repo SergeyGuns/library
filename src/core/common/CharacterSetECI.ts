@@ -50,6 +50,7 @@ export enum CharacterSetValueIdentifiers {
     Big5,
     GB18030,
     EUC_KR,
+    KOI8_R
 }
 
 /**
@@ -149,6 +150,11 @@ export default class CharacterSetECI {
 
     public static readonly EUC_KR = new CharacterSetECI(
         CharacterSetValueIdentifiers.EUC_KR, 30, 'EUC_KR', 'EUC-KR');
+
+    public static readonly KOI8_R = new CharacterSetECI(
+        CharacterSetValueIdentifiers.KOI8_R, 31, 'KOI8_R', 'KOI8-R');
+
+    
 
     public values: Int32Array;
     public otherEncodingNames: string[];
