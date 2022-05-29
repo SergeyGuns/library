@@ -27,6 +27,7 @@ import Integer from '../../util/Integer';
 import { int } from '../../../customTypings';
 import CharacterSetECI from '../../common/CharacterSetECI';
 import DecodeHintType from '../../DecodeHintType';
+import Charset from '../../util/Charset';
 
 // import java.util.Arrays;
 
@@ -78,11 +79,13 @@ export default class Decoder {
 
     public decode(detectorResult: AztecDetectorResult, hints: Map<DecodeHintType, any> | null = null): DecoderResult {
         this.ddata = detectorResult;
+        const charsetName = hints.get(DecodeHintType.CHARACTER_SET)
+        const charset = CharacterSetECI.getCharacterSetECIByName(charsetName)
         let matrix = detectorResult.getBits();
         let rawbits = this.extractBits(matrix);
         let correctedBits = this.correctBits(rawbits);
         let rawBytes = Decoder.convertBoolArrayToByteArray(correctedBits);
-        let result = Decoder.getEncodedData(correctedBits, CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)));
+        let result = Decoder.getEncodedData(correctedBits, charset);
         let decoderResult = new DecoderResult(rawBytes, result, null, null);
         decoderResult.setNumBits(correctedBits.length);
         return decoderResult;
@@ -90,7 +93,7 @@ export default class Decoder {
 
     // This method is used for testing the high-level encoder
     public static highLevelDecode(correctedBits: boolean[], hints: Map<DecodeHintType, any>): string {
-        return this.getEncodedData(correctedBits,CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)))
+        return this.getEncodedData(correctedBits, hints.get(DecodeHintType.CHARACTER_SET))
     }
 
     /**
@@ -98,7 +101,7 @@ export default class Decoder {
      *
      * @return the decoded string
      */
-    private static getEncodedData(correctedBits: boolean[], chaset: CharacterSetECI): string {
+    private static getEncodedData(correctedBits: boolean[], charset: Charset): string {
         let endIndex: number = correctedBits.length;
         let latchTable = Table.UPPER; // table most recently latched to
         let shiftTable = Table.UPPER; // table to use for the next read
@@ -124,7 +127,7 @@ export default class Decoder {
                         break;
                     }
                     const code: int = Decoder.readCode(correctedBits, index, 8);
-                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, CharacterSetECI.Cp1251);
+                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset || CharacterSetECI.Cp1251);
                     index += 8;
                 }
                 // Go back to whatever mode we had been in

@@ -48,7 +48,6 @@ export default class AztecReader implements Reader {
      * @throws FormatException if a Data Matrix code cannot be decoded
      */
     public decode(image: BinaryBitmap, hints: Map<DecodeHintType, any> | null = null): Result {
-
         let exception: Exception = null;
         let detector = new Detector(image.getBlackMatrix());
         let points: ResultPoint[] = null;
@@ -58,7 +57,7 @@ export default class AztecReader implements Reader {
             let detectorResult = detector.detectMirror(false);
             points = detectorResult.getPoints();
             this.reportFoundResultPoints(hints, points);
-            decoderResult = new Decoder().decode(detectorResult);
+            decoderResult = new Decoder().decode(detectorResult, hints);
         } catch (e) {
             exception = e;
         }
@@ -67,7 +66,7 @@ export default class AztecReader implements Reader {
                 let detectorResult = detector.detectMirror(true);
                 points = detectorResult.getPoints();
                 this.reportFoundResultPoints(hints, points);
-                decoderResult = new Decoder().decode(detectorResult);
+                decoderResult = new Decoder().decode(detectorResult, hints);
             } catch (e) {
                 if (exception != null) {
                     throw exception;
