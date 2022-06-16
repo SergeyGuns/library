@@ -80,7 +80,7 @@ export default class Decoder {
     public decode(detectorResult: AztecDetectorResult, hints: Map<DecodeHintType, any> | null = null): DecoderResult {
         this.ddata = detectorResult;
         const charsetName = hints.get(DecodeHintType.CHARACTER_SET)
-        const charset = CharacterSetECI.getCharacterSetECIByName(charsetName)
+        const charset = charsetName ? CharacterSetECI.getCharacterSetECIByName(charsetName) : null
         let matrix = detectorResult.getBits();
         let rawbits = this.extractBits(matrix);
         let correctedBits = this.correctBits(rawbits);
@@ -127,7 +127,7 @@ export default class Decoder {
                         break;
                     }
                     const code: int = Decoder.readCode(correctedBits, index, 8);
-                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset || CharacterSetECI.Cp1251);
+                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset);
                     index += 8;
                 }
                 // Go back to whatever mode we had been in
