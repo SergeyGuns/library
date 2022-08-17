@@ -6,6 +6,7 @@ import StringEncoding from '../../util/StringEncoding';
 import StringUtils from '../../common/StringUtils';
 import FormatException from '../../FormatException';
 import IllegalStateException from '../../IllegalStateException';
+import DecodeHintType from '../../DecodeHintType';
 
 /*
  * Copyright 2008 ZXing authors
@@ -77,7 +78,7 @@ export default class DecodedBitStreamParser {
     'O',  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '{', '|', '}', '~', String.fromCharCode(127)
   ];
 
-  static decode(bytes:  Uint8Array): DecoderResult {
+  static decode(bytes:  Uint8Array, hints): DecoderResult {
     const bits = new BitSource(bytes);
     const result = new StringBuilder();
     const resultTrailer = new StringBuilder();
@@ -112,6 +113,8 @@ export default class DecodedBitStreamParser {
     if (resultTrailer.length() > 0) {
       result.append(resultTrailer.toString());
     }
+    hints && console.log(hints.get(DecodeHintType.CHARACTER_SET))
+    console.log(result.toString())
     return new DecoderResult(bytes, result.toString(), byteSegments.length === 0 ? null : byteSegments, null);
   }
 

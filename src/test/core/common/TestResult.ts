@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import DecodeHintType from "src/core/DecodeHintType";
+
 /*package com.google.zxing.common;*/
 
 export default class TestResult {
@@ -23,7 +25,8 @@ export default class TestResult {
         private tryHarderCount: number /*int*/,
         private maxMisreads: number /*int*/,
         private maxTryHarderMisreads: number /*int*/,
-        private rotation: number/*float*/) {
+        private rotation: number/*float*/,
+        private hints?: Map<DecodeHintType, any>[]) {
     }
 
     public getMustPassCount(): number /*int*/ {
@@ -45,5 +48,7 @@ export default class TestResult {
     public getRotation(): number/*float*/ {
         return this.rotation;
     }
-
+    public getHints():Map<DecodeHintType, any>[] {
+        return this?.hints;
+    }
 }

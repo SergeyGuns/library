@@ -4,7 +4,7 @@ import StringUtils from '../common/StringUtils';
 
 export default class StringBuilder {
 
-  private encoding: CharacterSetECI;
+  private encoding: CharacterSetECI = CharacterSetECI.UTF8;
 
   public constructor(private value: string = '') { }
 

@@ -179,7 +179,7 @@ export default /*final*/ class DecodedBitStreamParser {
     // pass encoding to result (will be used for decode symbols in byte mode)
     let result: StringBuilder = new StringBuilder('');
     // let encoding: Charset = StandardCharsets.ISO_8859_1;
-    let encoding = CharacterSetECI.ISO8859_1;
+    let encoding = CharacterSetECI.ISO8859_5;
     /**
      * @note the next command is specific from this TypeScript library
      * because TS can't properly cast some values to char and

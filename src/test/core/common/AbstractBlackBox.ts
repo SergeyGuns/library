@@ -92,9 +92,10 @@ abstract class AbstractBlackBoxSpec {
   protected addTest(
     mustPassCount: number /* int */,
     tryHarderCount: number /* int */,
-    rotation: number /* float */
+    rotation: number /* float */,
+    hints?: Map<DecodeHintType, any>[]
   ): void {
-    this.addTestWithMax(mustPassCount, tryHarderCount, 0, 0, rotation);
+    this.addTestWithMax(mustPassCount, tryHarderCount, 0, 0, rotation, hints || null);
   }
   /**
    * Adds a new test for the current directory of images.
@@ -111,9 +112,10 @@ abstract class AbstractBlackBoxSpec {
     tryHarderCount: number /* int */,
     maxMisreads: number /* int */ = 0,
     maxTryHarderMisreads: number /* int */ = 0,
-    rotation: number/* float */
+    rotation: number/* float */,
+    hints?:Map<DecodeHintType, any>[]
   ): void {
-    this.testResults.push(new TestResult(mustPassCount, tryHarderCount, maxMisreads, maxTryHarderMisreads, rotation));
+    this.testResults.push(new TestResult(mustPassCount, tryHarderCount, maxMisreads, maxTryHarderMisreads, rotation, hints || null));
   }
 
   private walkDirectory(dirPath: string) {
@@ -222,8 +224,10 @@ abstract class AbstractBlackBoxSpec {
             const rotatedImage = await SharpImage.loadWithRotation(testImage, rotation);
             const source: LuminanceSource = new SharpImageLuminanceSource(rotatedImage);
             const bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            const hints = this.testResults[x].getHints()
             try {
-              if (this.decode(bitmap, rotation, expectedText, expectedMetadata, false)) {
+              console.warn(testImage)
+              if (this.decode(bitmap, rotation, expectedText, expectedMetadata, false, hints || null)) {
                 passedCounts[x]++;
               } else {
                 misreadCounts[x]++;
@@ -314,12 +318,14 @@ abstract class AbstractBlackBoxSpec {
     rotation: number/*float*/,
     expectedText: string,
     expectedMetadata: Map<string, string>,
-    tryHarder: boolean
+    tryHarder: boolean,
+    decodeHints?: Map<DecodeHintType, any>[]
   ): boolean {
 
     const suffix: string = ` (${tryHarder ? 'try harder, ' : ''}rotation: ${rotation})`;
+    let hints = new Map<DecodeHintType, any>()
 
-    const hints = new Map<DecodeHintType, any>();
+
     if (tryHarder) {
       hints.set(DecodeHintType.TRY_HARDER, true);
     }
@@ -327,12 +333,19 @@ abstract class AbstractBlackBoxSpec {
     // Try in 'pure' mode mostly to exercise PURE_BARCODE code paths for exceptions;
     // not expected to pass, generally
     let result: Result = null;
-    try {
-      const pureHints = new Map<DecodeHintType, any>(hints);
-      pureHints.set(DecodeHintType.PURE_BARCODE, true);
-      result = this.barcodeReader.decode(source, pureHints);
-    } catch (re/*ReaderException*/) {
-      // continue
+    if(decodeHints) {
+      decodeHints.forEach(hint => {
+        try {
+          const pureHints = new Map<DecodeHintType, any>([...hints,...hint]);
+          pureHints.set(DecodeHintType.PURE_BARCODE, true);
+          result = this.barcodeReader.decode(source, pureHints);
+          if(result.getBarcodeFormat() !== this.expectedFormat) {
+            result === null
+          }
+        } catch (re/*ReaderException*/) {
+          // continue
+        }
+      })
     }
 
     if (result === null) {
@@ -354,7 +367,7 @@ abstract class AbstractBlackBoxSpec {
     if (expectedTextR !== resultTextR) {
       const expectedTextHexCodes = AbstractBlackBoxSpec.toDebugHexStringCodes(expectedTextR);
       const resultTextHexCodes = AbstractBlackBoxSpec.toDebugHexStringCodes(resultTextR);
-      console.warn(`Content mismatch: expected '${expectedTextR}' (${expectedTextHexCodes}) but got '${resultTextR}'${suffix} (${resultTextHexCodes})`);
+      console.warn(`Content mismatch: expected \n\t '${expectedTextR}' \n but got \n\t '${resultTextR}'${suffix}\n\n`);
       return false;
     }
 

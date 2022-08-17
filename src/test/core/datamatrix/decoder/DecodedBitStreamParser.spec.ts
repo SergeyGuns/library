@@ -12,7 +12,7 @@ describe('QRCodeDecodedBitStreamParser', () => {
         bytes[3] = 'A'.charCodeAt(0) + 1;
         bytes[4] = 'B'.charCodeAt(0) + 1;
         bytes[5] = 'C'.charCodeAt(0) + 1;
-        const decodedString = DataMatrixDecodedBitStreamParser.decode(bytes).getText();
+        const decodedString = DataMatrixDecodedBitStreamParser.decode(bytes, null).getText();
         assert.strictEqual(decodedString, 'abcABC');
     });
 
@@ -22,7 +22,7 @@ describe('QRCodeDecodedBitStreamParser', () => {
         bytes[1] = 1 + 130;
         bytes[2] = 98 + 130;
         bytes[3] = 99 + 130;
-        const decodedString = DataMatrixDecodedBitStreamParser.decode(bytes).getText();
+        const decodedString = DataMatrixDecodedBitStreamParser.decode(bytes, null).getText();
         assert.strictEqual(decodedString, '00019899');
     });
 

@@ -1,3 +1,4 @@
+import DecodeHintType from 'src/core/DecodeHintType';
 import ChecksumException from '../../ChecksumException';
 import BitMatrix from '../../common/BitMatrix';
 import DecoderResult from '../../common/DecoderResult';
@@ -46,7 +47,7 @@ export default class Decoder {
    * @throws FormatException if the Data Matrix Code cannot be decoded
    * @throws ChecksumException if error correction fails
    */
-  public decode(bits: BitMatrix): DecoderResult {
+  public decode(bits: BitMatrix, hints?: Map<DecodeHintType, any>): DecoderResult {
     // Construct a parser and read version, error-correction level
     const parser = new BitMatrixParser(bits);
     const version = parser.getVersion();
@@ -77,7 +78,7 @@ export default class Decoder {
     }
 
     // Decode the contents of that stream of bytes
-    return DecodedBitStreamParser.decode(resultBytes);
+    return DecodedBitStreamParser.decode(resultBytes, hints||null);
   }
 
   /**

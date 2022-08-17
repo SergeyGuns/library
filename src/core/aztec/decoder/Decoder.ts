@@ -79,7 +79,7 @@ export default class Decoder {
 
     public decode(detectorResult: AztecDetectorResult, hints: Map<DecodeHintType, any> | null = null): DecoderResult {
         this.ddata = detectorResult;
-        const charsetName = hints.get(DecodeHintType.CHARACTER_SET)
+        const charsetName = hints?.get(DecodeHintType.CHARACTER_SET)
         const charset = charsetName ? CharacterSetECI.getCharacterSetECIByName(charsetName) : null
         let matrix = detectorResult.getBits();
         let rawbits = this.extractBits(matrix);
@@ -87,13 +87,14 @@ export default class Decoder {
         let rawBytes = Decoder.convertBoolArrayToByteArray(correctedBits);
         let result = Decoder.getEncodedData(correctedBits, charset);
         let decoderResult = new DecoderResult(rawBytes, result, null, null);
+        console.warn(`\n try in ${charsetName} ${decoderResult.getText()}\n`)
         decoderResult.setNumBits(correctedBits.length);
         return decoderResult;
     }
 
     // This method is used for testing the high-level encoder
-    public static highLevelDecode(correctedBits: boolean[], hints: Map<DecodeHintType, any>): string {
-        return this.getEncodedData(correctedBits, hints.get(DecodeHintType.CHARACTER_SET))
+    public static highLevelDecode(correctedBits: boolean[], hints?: Map<DecodeHintType, any>): string {
+        return this.getEncodedData(correctedBits, hints?.get(DecodeHintType.CHARACTER_SET))
     }
 
     /**
