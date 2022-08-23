@@ -232,7 +232,7 @@ export class BrowserCodeReader {
    *
    * @memberOf BrowserCodeReader
    */
-  public async decodeOnceFromVideoDevice(deviceId?: string, videoSource?: string | HTMLVideoElement): Promise<Result> {
+  public async decodeOnceFromVideoDevice(deviceId?: string, videoSource?: string | HTMLVideoElement, inputVideoConstraints?:MediaTrackConstraints): Promise<Result> {
 
     this.reset();
 
@@ -244,7 +244,7 @@ export class BrowserCodeReader {
       videoConstraints = { deviceId: { exact: deviceId } };
     }
 
-    const constraints: MediaStreamConstraints = { video: videoConstraints };
+    const constraints: MediaStreamConstraints = { video: { ...videoConstraints, ...inputVideoConstraints}};
 
     return await this.decodeOnceFromConstraints(constraints, videoSource);
   }
